@@ -20,6 +20,7 @@ class FileTranslationLoader extends TranslationLoader implements IFileContent {
   final bool useCountryCode;
   final bool useScriptCode;
   AssetBundle assetBundle = rootBundle;
+  bool isLoadingCurrentTranslation = false;
 
   Map<dynamic, dynamic> _decodedMap = Map();
   late List<BaseDecodeStrategy> _decodeStrategies;
@@ -55,11 +56,14 @@ class FileTranslationLoader extends TranslationLoader implements IFileContent {
   }
 
   Future _loadCurrentTranslation() async {
+    isLoadingCurrentTranslation = true;
     try {
       this.locale = locale ?? await findDeviceLocale();
       MessagePrinter.info("The current locale is ${this.locale}");
       _decodedMap.addAll(await loadFile(composeFileName()));
+      isLoadingCurrentTranslation = false;
     } catch (e) {
+      isLoadingCurrentTranslation = false;
       MessagePrinter.debug('Error loading translation $e');
     }
   }
@@ -67,7 +71,9 @@ class FileTranslationLoader extends TranslationLoader implements IFileContent {
   Future _loadFallback() async {
     try {
       final Map fallbackMap = await loadFile(fallbackFile);
-      _decodedMap = _deepMergeMaps(fallbackMap, _decodedMap);
+      if (isLoadingCurrentTranslation == false) {
+        _decodedMap = _deepMergeMaps(fallbackMap, _decodedMap);
+      }
       MessagePrinter.debug('Fallback maps have been merged');
     } catch (e) {
       MessagePrinter.debug('Error loading translation fallback $e');
