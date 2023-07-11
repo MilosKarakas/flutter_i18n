@@ -42,7 +42,7 @@ class FileTranslationLoader extends TranslationLoader implements IFileContent {
 
   /// Return the translation Map
   Future<Map> load() async {
-    _decodedMap = Map();
+    
     await _loadCurrentTranslation();
     await _loadFallback();
     return _decodedMap;
@@ -60,7 +60,8 @@ class FileTranslationLoader extends TranslationLoader implements IFileContent {
     try {
       this.locale = locale ?? await findDeviceLocale();
       MessagePrinter.info("The current locale is ${this.locale}");
-      _decodedMap.addAll(await loadFile(composeFileName()));
+      //_decodedMap.addAll(await loadFile(composeFileName()));
+      _decodedMap = Map()..addAll(await loadFile(composeFileName()));
       isLoadingCurrentTranslation = false;
     } catch (e) {
       isLoadingCurrentTranslation = false;
