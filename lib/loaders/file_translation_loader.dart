@@ -44,7 +44,7 @@ class FileTranslationLoader extends TranslationLoader implements IFileContent {
   Future<Map> load() async {
     
     await _loadCurrentTranslation();
-    await _loadFallback();
+    //await _loadFallback();
     return _decodedMap;
   }
 
