@@ -32,7 +32,34 @@ class FlutterI18nDelegate extends LocalizationsDelegate<FlutterI18n> {
     MessagePrinter.info("New locale: $locale");
     final TranslationLoader translationLoader =
         _translationObject!.translationLoader!;
-    if (translationLoader.locale != locale ||
+
+    bool localesEqual = false;
+    if (translationLoader.locale != null) {
+      String currentLocaleString = '';
+      if (translationLoader.locale?.languageCode != null) {
+        currentLocaleString += translationLoader.locale!.languageCode;
+      }
+      if (translationLoader.locale?.scriptCode != null) {
+        currentLocaleString += '_${translationLoader.locale!.scriptCode}';
+      }
+      if (translationLoader.locale?.countryCode != null) {
+        currentLocaleString += '_${translationLoader.locale!.countryCode}';
+      }
+
+      String newLocaleString = '';
+      if (locale.languageCode != null) {
+        newLocaleString += locale.languageCode;
+      }
+      if (locale.scriptCode != null) {
+        newLocaleString += '_${locale.scriptCode}';
+      }
+      if (locale.countryCode != null) {
+        newLocaleString += '_${locale.countryCode}';
+      }
+      localesEqual = currentLocaleString == newLocaleString;
+    }
+
+    if (!localesEqual ||
         _translationObject!.decodedMap == null ||
         _translationObject!.decodedMap!.isEmpty) {
       translationLoader.locale = currentLocale = locale;
