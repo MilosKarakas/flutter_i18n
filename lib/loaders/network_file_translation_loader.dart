@@ -7,6 +7,7 @@ import 'file_translation_loader.dart';
 /// Loads translations from the remote resource
 class NetworkFileTranslationLoader extends FileTranslationLoader {
   final Uri baseUri;
+  final void Function(int, dynamic)? onError;
 
   NetworkFileTranslationLoader(
       {required this.baseUri,
@@ -14,7 +15,9 @@ class NetworkFileTranslationLoader extends FileTranslationLoader {
         fallbackFile = "en",
         useCountryCode = false,
         useScriptCode = false,
-        decodeStrategies})
+        decodeStrategies,
+        this.onError
+      })
       : super(
       fallbackFile: fallbackFile,
       useCountryCode: useCountryCode,
@@ -25,8 +28,16 @@ class NetworkFileTranslationLoader extends FileTranslationLoader {
   @override
   Future<String> loadString(final String fileName, final String extension) async {
     final resolvedUri = resolveUri(fileName, extension);
-    final result = await http.get(resolvedUri);
-    return result.body;
+    try {
+      final result = await http.get(resolvedUri);
+      return result.body;
+    } catch (exception) {
+      if (exception is ArgumentError && exception.toString().contains('Invalid status code 0')) {
+        onError?.call(0, '');
+        rethrow;
+      }
+      rethrow;
+    }
   }
 
   Uri resolveUri(final String fileName, final String extension) {
