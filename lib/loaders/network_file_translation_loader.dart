@@ -32,10 +32,7 @@ class NetworkFileTranslationLoader extends FileTranslationLoader {
       final result = await http.get(resolvedUri);
       return result.body;
     } catch (exception) {
-      if (exception is ArgumentError && exception.toString().contains('Invalid status code 0')) {
-        onError?.call(0, '');
-        rethrow;
-      }
+      onError?.call(0, '');
       rethrow;
     }
   }
